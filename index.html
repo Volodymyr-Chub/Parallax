@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEPAL MOUNTAINS</title>
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <main class="hero">
+      <div class="hero_image"></div>
+
+      <div class="hero__content">
+        <p class="title">NEPAL MOUNTAINS</p>
+        <p class="subtitle">
+          Visit the most beautiful mountains in the world
+        </p>
+      </div>
+
+      <p class="explore">Explore</p>
+      <p class="store">Store</p>
+      <img src="image/menu.jpg" alt="Menu" class="menu" />
+      <img src="image/logo.jpg" alt="Logo" class="logo" />
+      <img src="image/share.jpg" alt="Share" class="share" />
+      <img src="image/social.jpg" alt="Social links" class="social" />
+    </main>
+    <section class="video-section" aria-label="Mountain video">
+      <div class="video-copy">
+        <p class="title2">Everest</p>
+        <p class="subtitle2">The highest mountain in the world</p>
+      </div>
+      <div class="video-media">
+        <img
+          class="video-preview"
+          src="image/video.jpg"
+          alt="Mountain video preview"
+        />
+        <p class="zero">01</p>
+      </div>
+    </section>
+    <script>
+      (() => {
+        const videoSection = document.querySelector(".video-section");
+        const videoCopy = document.querySelector(".video-copy");
+
+        if (videoCopy && videoSection && "IntersectionObserver" in window) {
+          const revealObserver = new IntersectionObserver(([entry]) => {
+            videoSection.classList.toggle("is-visible", entry.isIntersecting);
+          }, { threshold: 0.2 });
+          revealObserver.observe(videoSection);
+        } else {
+          videoSection?.classList.add("is-visible");
+        }
+
+        const stylesheet = document.querySelector('link[rel="stylesheet"]');
+        const files = ["index.html", "index.css"];
+        const previous = new Map();
+
+        async function readFile(file) {
+          const response = await fetch(`${file}?_=${Date.now()}`, {
+            cache: "no-store",
+          });
+          if (!response.ok) throw new Error(`Could not check ${file}`);
+          return response.text();
+        }
+
+        async function checkForChanges() {
+          try {
+            for (const file of files) {
+              const content = await readFile(file);
+              if (previous.has(file) && previous.get(file) !== content) {
+                if (file === "index.html") {
+                  location.reload();
+                  return;
+                }
+                stylesheet.href = `index.css?_=${Date.now()}`;
+              }
+              previous.set(file, content);
+            }
+          } catch {
+            // Keep checking if the server briefly fails to respond.
+          }
+        }
+
+        checkForChanges().then(() => setInterval(checkForChanges, 1000));
+      })();
+    </script>
+  </body>
+</html>
